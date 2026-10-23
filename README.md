@@ -1,46 +1,51 @@
 # 🛡️ NetSentinel
 
-### Network Intrusion Detection Using Apache Spark MLlib
+## Network Intrusion Detection Using Apache Spark MLlib
 
-NetSentinel is an academic machine-learning project that analyzes
-network traffic records and classifies them as **normal traffic** or
-**potential attack traffic**. It uses the NSL-KDD benchmark dataset and
-Apache Spark MLlib to train and evaluate multiple classification models.
+NetSentinel is a machine-learning project that analyzes network traffic
+records and classifies them as **normal traffic** or **potential attack
+traffic**. It uses the NSL-KDD dataset and Apache Spark MLlib to build,
+evaluate, and compare classification models.
 
-> **Project scope:** NetSentinel currently performs dataset-based
-> analysis. It does not capture live network packets or act as a
-> production firewall or intrusion prevention system.
+The project includes a Jupyter Notebook for data preparation and
+experiments, saved model pipelines, and a Streamlit dashboard for
+interacting with the trained Decision Tree model.
 
-------------------------------------------------------------------------
+## Project Features
 
-## ✨ Features
-
--   **Network traffic classification** --- predicts whether a record is
-    normal or an attack.
--   **Multiple ML models** --- Decision Tree, Logistic Regression,
-    Linear SVM, Naive Bayes, and Random Forest.
--   **Model evaluation** --- compares Accuracy and F1-score; ROC curves
-    can be used to compare discrimination performance.
--   **Feature importance** --- explores which input features the
-    selected Decision Tree relies on.
--   **Attack analysis** --- examines normal-versus-attack traffic and
+-   **Network traffic classification:** Predicts whether a network
+    record is normal or potentially malicious.
+-   **Data preparation:** Loads the NSL-KDD training and testing files,
+    names the dataset columns, and prepares a binary target label.
+-   **Feature processing:** Converts categorical network fields into
+    numerical features and combines the input columns into a feature
+    vector for Spark MLlib.
+-   **Model training and comparison:** Trains and evaluates Decision
+    Tree, Logistic Regression, Linear SVM, Naive Bayes, and Random
+    Forest classifiers.
+-   **Performance evaluation:** Uses metrics such as Accuracy and
+    F1-score, with ROC curve analysis where included in the notebook.
+-   **Feature importance:** Examines the features used by the selected
+    Decision Tree model.
+-   **Traffic analysis:** Counts normal and attack records and explores
     frequent attack labels.
--   **Streamlit dashboard** --- provides a user interface for uploading
-    supported CSV/TXT data, viewing predictions, and exporting results.
--   **Saved models** --- keeps trained Spark MLlib pipeline models in
-    the `models/` directory.
+-   **Interactive dashboard:** Provides an Overview page, CSV/TXT upload
+    for intrusion prediction, prediction results, and project
+    information.
+-   **Exportable results:** Allows prediction results to be reviewed and
+    downloaded from the dashboard.
 
-## 🧰 Technology Stack
+## Technology Stack
 
--   Python
--   Apache Spark / PySpark MLlib
--   Streamlit
--   Pandas
--   Matplotlib
--   scikit-learn (for evaluation/ROC calculations where used)
--   Jupyter Notebook
+-   **Python** --- project programming language
+-   **Apache Spark / PySpark MLlib** --- data processing and
+    machine-learning pipelines
+-   **Streamlit** --- interactive web dashboard
+-   **Pandas** --- tabular data handling
+-   **Matplotlib** --- charts and visualizations
+-   **Jupyter Notebook** --- experimentation and model evaluation
 
-## 📁 Project Structure
+## Project Structure
 
 ``` text
 NetSentinel/
@@ -60,234 +65,150 @@ NetSentinel/
 └── requirements.txt
 ```
 
-The model directories contain saved Spark MLlib pipeline artifacts. Keep
-each model directory intact; do not treat it as a single model file.
+-   `data/` contains the training and testing dataset files.
+-   `models/` contains saved Spark MLlib pipeline models.
+-   `notebooks/NetSentinel.ipynb` contains the data preparation,
+    training, evaluation, comparison, and analysis workflow.
+-   `app.py` contains the Streamlit dashboard.
+-   `requirements.txt` lists the project's Python dependencies.
 
-## 📊 Dataset
+## How the Project Works
 
-NetSentinel uses the **NSL-KDD** dataset, a benchmark dataset created
-for research into network intrusion detection. The project folder
-includes:
+### 1. Data Loading and Preparation
 
--   `KDDTrain+.txt` --- training records
--   `KDDTest+.txt` --- test records
+The notebook loads the training and test files and assigns names to the
+dataset columns. The attack label is converted into a binary target:
+normal traffic is represented by `0`, while attack traffic is
+represented by `1`. The original attack and difficulty columns are
+excluded from the model input so that the model learns from the network
+traffic features.
 
-The original files are comma-separated and typically contain 43 columns:
-41 traffic features, an attack label, and a difficulty field. In the
-binary-classification workflow, `normal` is mapped to label `0` and
-attack labels are mapped to label `1`.
+### 2. Feature Processing
 
-Dataset source and background: - University of New Brunswick, Canadian
-Institute for Cybersecurity: https://www.unb.ca/cic/datasets/nsl.html -
-NSL-KDD dataset mirror: https://github.com/jmnwong/NSL-KDD-Dataset
+The dataset contains numeric and categorical fields. The categorical
+fields `protocol_type`, `service`, and `flag` are converted into indexed
+values and encoded into feature vectors. The numeric and encoded columns
+are then combined into a single `features` vector for model training.
 
-Please follow the dataset's terms and cite the dataset source in
-academic submissions.
+### 3. Model Training
 
-## ⚙️ Setup
+The project trains five classifiers using Spark MLlib:
 
-### 1. Prerequisites
+  -----------------------------------------------------------------------
+  Model                               Role in the project
+  ----------------------------------- -----------------------------------
+  Decision Tree                       Learns decision rules and provides
+                                      feature-importance information
 
-Install a compatible Python, Java, and PySpark combination. This project
-was developed in a local Windows environment using Spark. **Check your
-installed PySpark version against your Python and Java versions before
-troubleshooting runtime errors.** PySpark 3.5.x is not a supported
-combination with Python 3.13; Python 3.11 is a safer option for PySpark
-3.5.3.
+  Logistic Regression                 Provides a linear classification
+                                      approach
 
-### 2. Create and activate a virtual environment (Windows PowerShell)
+  Linear SVM                          Separates classes using a linear
+                                      decision boundary
 
-From the project root:
+  Naive Bayes                         Uses a probabilistic classification
+                                      approach
+
+  Random Forest                       Combines multiple decision trees
+  -----------------------------------------------------------------------
+
+The models are evaluated on the prepared test data. The model with the
+strongest measured results under the project's chosen metrics can be
+selected for further analysis and dashboard predictions. The actual
+scores should be taken from the notebook's output rather than assumed in
+advance.
+
+### 4. Model Evaluation and Analysis
+
+Accuracy measures the proportion of correctly classified records.
+F1-score balances precision and recall. ROC curve analysis can be used
+to compare how well models distinguish the two classes across different
+decision thresholds, provided suitable prediction scores are available.
+
+The notebook also visualizes feature importance for the selected
+Decision Tree. This helps explain which inputs the model relies on, but
+feature importance does not prove that a feature causes an attack.
+
+### 5. Traffic Analysis
+
+The notebook summarizes normal versus attack traffic and identifies
+frequent attack labels in the dataset. These views help describe the
+dataset's class distribution and provide context for interpreting the
+model's predictions.
+
+### 6. Streamlit Dashboard
+
+The dashboard provides four main pages:
+
+-   **Overview:** Summarizes the project, model, and analysis
+    capabilities.
+-   **Detect Intrusions:** Accepts a supported CSV/TXT file and runs the
+    saved Decision Tree pipeline on its records.
+-   **Prediction Results:** Displays the number of records classified as
+    normal or attack, a traffic distribution chart, record-level
+    predictions, and a downloadable results file.
+-   **About Project:** Describes the objective, dataset, workflow, and
+    technology stack.
+
+The dashboard expects the required 41 input features in the correct
+order and format. Input support depends on the validation implemented in
+`app.py`. Predictions are estimates from the trained model, not
+confirmed security incidents.
+
+## Setup and Usage
+
+Use Python, Java, and PySpark versions that are compatible with one
+another. In particular, PySpark 3.5.3 is a better fit for Python 3.11
+than Python 3.13.
+
+From the project root on Windows PowerShell, create and activate an
+environment if needed:
 
 ``` powershell
 py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-```
-
-If you need to keep a different Python version for other projects, this
-virtual environment does not change your system-wide Python
-installation.
-
-### 3. Install dependencies
-
-``` powershell
 pip install -r requirements.txt
 ```
 
-If `requirements.txt` does not yet contain all packages used by the
-notebook and dashboard, install the required packages:
+If dependencies are missing from `requirements.txt`, install the
+packages used by the project:
 
 ``` powershell
 pip install pyspark==3.5.3 streamlit pandas matplotlib scikit-learn
 ```
 
-Use package versions compatible with the environment in which the models
-were trained and saved.
+Open `notebooks/NetSentinel.ipynb` in VS Code, select the intended
+environment as the notebook kernel, and run the cells in order. The
+notebook saves trained model artifacts under `models/`.
 
-## ▶️ Run the Notebook
-
-Open the project folder in VS Code, select the project's virtual
-environment as the Jupyter kernel, and open:
-
-``` text
-notebooks/NetSentinel.ipynb
-```
-
-Run the notebook cells in order. The notebook covers data preparation,
-feature encoding, model training, evaluation, model comparison, feature
-importance, and traffic analysis.
-
-The notebook saves model artifacts under `models/`. If you retrain a
-model, ensure that the saved pipeline matches the preprocessing and
-feature order expected by the dashboard.
-
-## 🚀 Run the Streamlit Dashboard
-
-From the **project root** (the folder containing `app.py`), activate the
-correct virtual environment and run:
+To launch the dashboard from the folder containing `app.py`, run:
 
 ``` powershell
 streamlit run app.py
 ```
 
-Streamlit normally opens the application at:
+Streamlit normally makes the local dashboard available at
+`http://localhost:8501`.
 
-``` text
-http://localhost:8501
-```
+## Limitations
 
-The dashboard includes navigation for: - **Overview** --- project and
-model information - **Detect Intrusions** --- upload supported traffic
-records and run predictions - **Prediction Results** --- review
-predicted classes, traffic counts, and export results - **About
-Project** --- summary of the project workflow and technology
+-   NetSentinel analyzes stored dataset records; it does not capture
+    live network packets.
+-   NSL-KDD is a benchmark dataset and may not represent current network
+    traffic or every modern attack.
+-   Model performance on the dataset may not transfer directly to a real
+    network.
+-   The model's output should be treated as a prediction that requires
+    further investigation, not proof of malicious activity.
+-   The saved model and dashboard must use compatible Python, Java, and
+    PySpark environments.
 
-### Input file expectations
+## Project Summary
 
-The dashboard expects the 41 NSL-KDD input features in the same order
-and representation used during training. Depending on the
-implementation, it may support headerless 41-, 42-, or 43-column input
-files, or CSV files with named feature columns. Check the input
-validation in `app.py` before uploading a custom dataset.
-
-For the original NSL-KDD text files, records are comma-separated. Use
-the file format expected by the dashboard; do not assume every arbitrary
-CSV will work without preprocessing.
-
-## 🧪 Models and Evaluation
-
-The project trains and compares these classifiers:
-
-  Model                 Purpose
-  --------------------- -------------------------------------------------
-  Decision Tree         Learns interpretable decision rules
-  Logistic Regression   Estimates the likelihood of the positive class
-  Linear SVM            Learns a linear decision boundary
-  Naive Bayes           Applies a probabilistic classification approach
-  Random Forest         Combines multiple decision trees
-
-Metrics used in the notebook include: - **Accuracy** --- fraction of
-predictions that are correct. - **F1-score** --- combines precision and
-recall. - **ROC-AUC** --- measures ranking/discrimination across
-classification thresholds when valid model scores are available.
-
-Use the values produced by your actual notebook in the final report. Do
-not assume a model is best based on its name alone; report the measured
-metrics and explain the selection criteria. For intrusion detection,
-recall and false-positive behaviour can also matter because missed
-attacks and false alarms have different costs.
-
-## 🔍 Feature Importance
-
-The notebook examines feature importance from the trained Decision Tree.
-Feature importance indicates how much the model used a feature when
-making decisions; it does **not** prove that a feature causes an attack.
-If categorical variables are one-hot encoded, importance may refer to
-encoded feature vectors rather than each original category individually.
-
-## 🛠️ Troubleshooting
-
-### Spark Python worker crashes
-
-If the dashboard reports `Python worker exited unexpectedly` or
-`PythonRDD.runJob`, check:
-
-1.  The terminal is using the intended virtual environment.
-2.  `python --version` and `pip show pyspark` show the expected
-    versions.
-3.  The Python and Java versions are compatible with the installed
-    PySpark release.
-4.  The saved model can be loaded and used in the notebook environment.
-5.  The model folder `models/decision_tree/` exists and contains the
-    full saved pipeline.
-
-For PySpark 3.5.3, use a compatible Python version such as Python 3.11
-rather than Python 3.13. Keep the environment used to load the model
-consistent with the environment used to create it.
-
-### Model folder not found
-
-Run Streamlit from the project root and confirm that this directory
-exists:
-
-``` text
-models/decision_tree/
-```
-
-The folder contains Spark model artifacts, not a single `.pkl` file.
-
-### Predictions fail on an uploaded file
-
-Confirm that the input has all required features, the correct column
-order, valid numeric values, and categorical values handled by the saved
-preprocessing pipeline.
-
-## 🔐 Limitations
-
--   The project evaluates benchmark dataset records; it does not inspect
-    live network traffic.
--   NSL-KDD is an older benchmark and does not represent every modern
-    network environment or current attack type.
--   Model performance on this dataset may not transfer directly to real
-    networks.
--   Predicted attacks are model estimates and should not be treated as
-    confirmed incidents.
--   Results should be reported from the actual experiment outputs and
-    interpreted alongside suitable metrics.
-
-## 🔮 Possible Future Improvements
-
--   Add per-class evaluation and recall to better assess missed attacks.
--   Add a detailed attack-category analysis view.
--   Improve validation for uploaded files and provide clear input-format
-    guidance.
--   Add model versioning and a reproducible experiment configuration.
--   Evaluate on newer intrusion-detection datasets and, where
-    appropriate, validated live-traffic data.
--   Add authentication and deployment security before making the
-    dashboard publicly accessible.
-
-## 👩‍💻 Academic Project
-
-**Project name:** NetSentinel --- Network Intrusion Detection Using
-Apache Spark MLlib
-
-This repository is intended for academic learning and demonstration. Add
-your name, institution, supervisor, and project year here if required by
-your submission format.
-
-## 📚 References
-
-1.  University of New Brunswick, Canadian Institute for Cybersecurity.
-    *NSL-KDD dataset information*.
-    https://www.unb.ca/cic/datasets/nsl.html
-2.  Tavallaee, M., Bagheri, E., Lu, W., & Ghorbani, A. A. *A Detailed
-    Analysis of the KDD CUP 99 Data Set*. 2009 IEEE Symposium on
-    Computational Intelligence for Security and Defense Applications
-    (CISDA). https://doi.org/10.1109/CISDA.2009.5356528
-
-------------------------------------------------------------------------
-
-**NetSentinel --- Turning network traffic records into actionable model
-predictions.**
+NetSentinel combines network traffic preparation, Spark MLlib
+classification, model evaluation, feature-importance analysis, traffic
+summaries, and a Streamlit interface in one project. It demonstrates an
+end-to-end workflow for dataset-based network intrusion detection and
+makes model predictions easier to inspect through an interactive
+dashboard.
