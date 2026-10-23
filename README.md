@@ -188,8 +188,12 @@ To launch the dashboard from the folder containing `app.py`, run:
 streamlit run app.py
 ```
 
-Streamlit normally makes the local dashboard available at
-`http://localhost:8501`.
+## 🚀 Live Demo
+
+**Live URL: `https://netsentinel-36.streamlit.app/` **
+
+Explore the NetSentinel interface for network intrusion detection
+and attack analysis.
 
 ## Limitations
 
