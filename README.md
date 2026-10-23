@@ -190,7 +190,7 @@ streamlit run app.py
 
 ## 🚀 Live Demo
 
-**Live URL:** `https://netsentinel-36.streamlit.app/`
+**Live URL:** https://netsentinel-36.streamlit.app/
 
 Explore the NetSentinel interface for network intrusion detection
 and attack analysis.
